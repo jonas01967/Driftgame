@@ -1,7 +1,0 @@
-[gd_scene format=3 uid="uid://6rk20ep3axwe"]
-
-[node name="HUD" type="CanvasLayer" unique_id=537271053]
-
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1163791386]
-offset_right = 40.0
-offset_bottom = 40.0
