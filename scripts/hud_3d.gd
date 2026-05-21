@@ -1,12 +1,12 @@
 extends CanvasLayer
 
-@onready var speed_label: Label = $Margin/VBox/SpeedLabel
-@onready var score_label: Label = $Margin/VBox/ScoreLabel
-@onready var time_label: Label = $Margin/VBox/TimeLabel
-@onready var drift_bar: ProgressBar = $Margin/VBox/DriftBar
-@onready var drift_label: Label = $Margin/VBox/DriftLabel
-@onready var mode_label: Label = $Margin/VBox/ModeLabel
-@onready var crosshair: Control = $Crosshair
+@onready var speed_label: Label = $MarginContainer/VBox/SpeedLabel
+@onready var score_label: Label = $MarginContainer/VBox/ScoreLabel
+@onready var time_label: Label = $MarginContainer/VBox/TimeLabel
+@onready var drift_bar: ProgressBar = $DriftBar
+@onready var drift_label: Label = $MarginContainer/VBox/DriftLabel
+@onready var mode_label: Label = $MarginContainer/VBox/ModeLabel
+@onready var crosshair: Control = null
 @onready var game_over_panel: Panel = $GameOverPanel
 
 var car_ref: Node3D
@@ -28,7 +28,7 @@ func setup(car: Node3D, mode: GameManager.GameMode) -> void:
 func _process(delta: float) -> void:
 	if car_ref == null:
 		return
-	var speed_kmh := car_ref.linear_velocity.length() * 3.6
+	var speed_kmh = car_ref.linear_velocity.length() * 3.6
 	speed_label.text = "%d km/h" % int(speed_kmh)
 	
 	# Drift-Bar ausblenden

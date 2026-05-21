@@ -6,7 +6,7 @@ extends Node3D
 @onready var hud: CanvasLayer = $HUD
 @onready var coin_spawner: Node3D = $CoinSpawner
 
-const COIN_SCENE := preload("res://scenes/Coin3D.tscn")
+const COIN_SCENE := preload("res://scenes/coin.tscn")
 
 func _ready() -> void:
 	var mode := GameManager.current_mode
@@ -26,8 +26,8 @@ func _schedule_coin_spawning() -> void:
 	timer.start()
 
 func _spawn_coins() -> void:
-	var ahead := track.get_road_direction_at(car.global_position)
-	var spawn_pos := car.global_position + ahead * 40.0
+	var ahead = track.get_road_direction_at(car.global_position)
+	var spawn_pos = car.global_position + ahead * 40.0
 	spawn_pos.y += 1.0
 	var coin := COIN_SCENE.instantiate()
 	coin.global_position = spawn_pos

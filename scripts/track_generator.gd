@@ -39,7 +39,7 @@ func _spawn_segment() -> void:
 	var seg_node := CSGBox3D.new()
 	seg_node.size = Vector3(road_width, 0.3, segment_length)
 	seg_node.position = center
-	seg_node.look_at(center + new_dir, Vector3.UP)
+	seg_node.look_at_from_position(center + new_dir, Vector3.UP)
 	seg_node.material_override = ROAD_MATERIAL
 	
 	# Querneigung (Banking)

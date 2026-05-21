@@ -1,8 +1,32 @@
 [gd_scene format=3 uid="uid://crkl182pxubpp"]
 
-[ext_resource type="Script" uid="uid://b8j8us8x7plag" path="res://scenes/UI/main_menu.gd" id="1_qwnig"]
+[ext_resource type="Script" uid="uid://b8j8us8x7plag" path="res://scripts/main_menu.gd" id="1_qwnig"]
 
 [node name="MainMenu" type="Control" unique_id=53322709]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_qwnig")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=2132054111]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1458431031]
+layout_mode = 2
+
+[node name="TitelLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=554332911]
+layout_mode = 2
+text = "Drift 3D"
+
+[node name="FreeBtn" type="Button" parent="CenterContainer/VBoxContainer" unique_id=655336089]
+layout_mode = 2
+text = "Freies Spiel"
+
+[node name="TimerBtn" type="Button" parent="CenterContainer/VBoxContainer" unique_id=810522314]
+layout_mode = 2
+text = "Timer"
+
+[node name="ScoreBtn" type="Button" parent="CenterContainer/VBoxContainer" unique_id=201852374]
+layout_mode = 2
+text = "Punkte"

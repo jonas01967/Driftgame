@@ -38,7 +38,7 @@ func _handle_input(delta: float) -> void:
 	brake = brake_value if handbrake else 0.0
 
 	# Progressives Lenken (schneller bei höherer Geschwindigkeit → weniger)
-	var speed_ratio := clamp(linear_velocity.length() / 30.0, 0.0, 1.0)
+	var speed_ratio = clamp(linear_velocity.length() / 30.0, 0.0, 1.0)
 	steer_target = steer_input * max_steer * (1.0 - speed_ratio * 0.4)
 	steering = lerp(steering, steer_target, steer_speed * delta)
 
