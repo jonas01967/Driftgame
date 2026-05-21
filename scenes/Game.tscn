@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bnguja76btrx0" path="res://scripts/game.gd" id="1_cpr0p"]
 [ext_resource type="Script" uid="uid://djth53imm67qg" path="res://scripts/track_generator.gd" id="2_78awf"]
 [ext_resource type="PackedScene" uid="uid://c3n2o5s06juvn" path="res://scenes/Car.tscn" id="3_s0nni"]
+[ext_resource type="PackedScene" uid="uid://6rk20ep3axwe" path="res://scenes/UI/hud.tscn" id="4_78awf"]
 
 [sub_resource type="Environment" id="Environment_aug50"]
 background_mode = 2
@@ -23,3 +24,5 @@ script = ExtResource("2_78awf")
 [node name="CoinSpawner" type="Node3D" parent="." unique_id=1193501876]
 
 [node name="Car" parent="." unique_id=159065741 instance=ExtResource("3_s0nni")]
+
+[node name="HUD" parent="." unique_id=537271053 instance=ExtResource("4_78awf")]
