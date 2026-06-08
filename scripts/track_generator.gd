@@ -1,7 +1,7 @@
 extends Node3D
 
-@export var segment_length: float = 22.0
-@export var road_width: float = 20.0
+@export var segment_length: float = 40.0
+@export var road_width: float = 40.0
 @export var curve_strength: float = 12.0
 @export var segments_visible: int = 20
 
