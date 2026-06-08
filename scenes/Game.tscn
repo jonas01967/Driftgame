@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://c3n2o5s06juvn" path="res://scenes/Car.tscn" id="3_s0nni"]
 [ext_resource type="PackedScene" uid="uid://6rk20ep3axwe" path="res://scenes/UI/hud.tscn" id="4_78awf"]
 [ext_resource type="Script" uid="uid://n01uadsecna" path="res://scripts/hud_3d.gd" id="5_s0nni"]
+[ext_resource type="Script" uid="uid://dcw8ruu44hrl6" path="res://scripts/environment_spawner.gd" id="6_aug50"]
 
 [sub_resource type="Environment" id="Environment_aug50"]
 background_mode = 2
@@ -29,3 +30,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -5)
 
 [node name="HUD" parent="." unique_id=537271053 instance=ExtResource("4_78awf")]
 script = ExtResource("5_s0nni")
+
+[node name="EnvironmentSpawner" type="Node3D" parent="." unique_id=601119859]
+script = ExtResource("6_aug50")

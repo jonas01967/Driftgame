@@ -9,13 +9,13 @@ func _ready() -> void:
 		func(): _start(GameManager.GameMode.TIMER))
 	$CenterContainer/VBox/ScoreBtn.pressed.connect(
 		func(): _start(GameManager.GameMode.SCORE))
-	_animate_title()
+	#_animate_title()
 
 func _start(mode: GameManager.GameMode) -> void:
 	GameManager.current_mode = mode
 	get_tree().change_scene_to_file(GAME_SCENE)
 
-func _animate_title() -> void:
-	var tween := create_tween().set_loops()
-	tween.tween_property($TitelLabel, "modulate:v", 0.6, 1.0)
-	tween.tween_property($TitelLabel, "modulate:v", 1.0, 1.0)
+#func _animate_title() -> void:
+	#var tween := create_tween().set_loops()
+	#tween.tween_property($TitelLabel, "modulate:v", 0.6, 1.0)
+	#tween.tween_property($TitelLabel, "modulate:v", 1.0, 1.0)

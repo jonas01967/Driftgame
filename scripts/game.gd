@@ -5,6 +5,7 @@ extends Node3D
 @onready var track: Node3D = $TrackGenerator
 @onready var hud: CanvasLayer = $HUD
 @onready var coin_spawner: Node3D = $CoinSpawner
+@onready var env_spawner: Node3D = $EnvironmentSpawner
 
 const COIN_SCENE := preload("res://scenes/Coin3D.tscn")
 
@@ -15,6 +16,7 @@ func _ready() -> void:
 	car.camera_rig = camera_rig
 	track.setup(car)
 	hud.setup(car, mode)
+	env_spawner.setup(car, track)
 
 	# Münz-Spawner nur im Score-Modus
 	if mode == GameManager.GameMode.SCORE:
