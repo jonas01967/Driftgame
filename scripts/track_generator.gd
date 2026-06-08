@@ -30,38 +30,40 @@ func _process(_delta: float) -> void:
 func _spawn_segment() -> void:
 	var curve := randf_range(-curve_strength, curve_strength)
 	var new_dir := last_dir.rotated(Vector3.UP, deg_to_rad(curve)).normalized()
-	
+
 	var start := last_pos
 	var end_pos := start + new_dir * segment_length
 	var center := (start + end_pos) * 0.5
-	
-	# CSGBox3D als Segment
-	var seg_node := CSGBox3D.new()
-	seg_node.size = Vector3(road_width, 0.3, segment_length)
-	seg_node.position = center
-	seg_node.look_at_from_position(center + new_dir, Vector3.UP)
-	seg_node.material_override = ROAD_MATERIAL
-	
-	# Querneigung (Banking)
-	seg_node.rotation_degrees.z = -curve * (bank_angle / curve_strength)
-	
-	# Kollision hinzufügen
+
+	# StaticBody3D statt CSGBox3D → hat echte Kollision
 	var body := StaticBody3D.new()
-	var cshape := CollisionShape3D.new()
-	cshape.shape = BoxShape3D.new()
-	(cshape.shape as BoxShape3D).size = Vector3(road_width, 0.3, segment_length)
-	body.add_child(cshape)
-	seg_node.add_child(body)
+	body.position = center
+	body.look_at_from_position(center, center + new_dir, Vector3.UP)
+
+	var col := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = Vector3(road_width, 0.3, segment_length)
+	col.shape = shape
+	body.add_child(col)
+
+	var mesh := MeshInstance3D.new()
+	var box := BoxMesh.new()
+	box.size = Vector3(road_width, 0.3, segment_length)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.1, 0.1, 0.1)
+	mesh.mesh = box
+	mesh.material_override = mat
+	body.add_child(mesh)
 	
-	add_child(seg_node)
-	
+	add_child(body)
+
 	segments.append({
-		"node": seg_node,
+		"node": body,
 		"start": start,
 		"end": end_pos,
 		"direction": new_dir,
 	})
-	
+
 	last_pos = end_pos
 	last_dir = new_dir
 

@@ -37,6 +37,7 @@ use_as_steering = true
 [node name="WheelRL" type="VehicleWheel3D" parent="." unique_id=161012320]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, -1.4)
 use_as_traction = true
+suspension_stiffness = 40.0
 
 [node name="Smoke" type="GPUParticles3D" parent="WheelRL" unique_id=337234834]
 emitting = false

@@ -9,7 +9,7 @@ extends Node3D
 const COIN_SCENE := preload("res://scenes/coin.tscn")
 
 func _ready() -> void:
-	var mode := GameManager.current_mode
+	var mode = GameManager.current_mode
 	GameManager.start_game(mode)
 	camera_rig.setup(car)
 	track.setup(car)

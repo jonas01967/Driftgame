@@ -3,7 +3,7 @@ extends VehicleBody3D
 signal drifting(angle: float)
 signal drift_ended
 
-@export var engine_force_value: float = 120.0
+@export var engine_force_value: float = 2000.0
 @export var brake_value: float = 80.0
 @export var max_steer: float = 0.4
 @export var steer_speed: float = 3.0
@@ -24,6 +24,7 @@ var drift_angle: float = 0.0
 var handbrake: bool = false
 
 func _physics_process(delta: float) -> void:
+	print("throttle: ", Input.get_axis("ui_down", "ui_up"))
 	_handle_input(delta)
 	_calculate_drift()
 	_update_effects()
@@ -33,19 +34,18 @@ func _handle_input(delta: float) -> void:
 	var steer_input := Input.get_axis("ui_right", "ui_left")
 	handbrake = Input.is_action_pressed("handbrake")
 
-	# Motor und Bremse
+	# Motor
 	engine_force = engine_force_value * throttle
 	brake = brake_value if handbrake else 0.0
 
-	# Progressives Lenken (schneller bei höherer Geschwindigkeit → weniger)
-	var speed_ratio = clamp(linear_velocity.length() / 30.0, 0.0, 1.0)
-	steer_target = steer_input * max_steer * (1.0 - speed_ratio * 0.4)
+	# Lenkung
+	steer_target = steer_input * max_steer
 	steering = lerp(steering, steer_target, steer_speed * delta)
 
-	# Seitengrip anpassen (Drift vs. normal)
+	# Grip / Drift
 	var grip := drift_friction if handbrake else normal_friction
-	for wheel in [wheel_rl, wheel_rr]:
-		wheel.wheel_friction_slip = grip
+	wheel_rl.wheel_friction_slip = grip
+	wheel_rr.wheel_friction_slip = grip
 
 func _calculate_drift() -> void:
 	var speed := linear_velocity.length()
