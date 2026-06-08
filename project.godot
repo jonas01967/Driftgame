@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="drift-city V2"
-run/main_scene="uid://fiae7sptjdg0"
+run/main_scene="uid://crkl182pxubpp"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 

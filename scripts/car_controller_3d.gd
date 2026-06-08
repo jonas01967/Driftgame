@@ -3,10 +3,10 @@ extends VehicleBody3D
 signal drifting(angle: float)
 signal drift_ended
 
-@export var engine_force_value: float = 2000.0
-@export var brake_value: float = 80.0
+@export var engine_force_value: float = 8000.0
+@export var brake_value: float = 5.0
 @export var max_steer: float = 0.4
-@export var steer_speed: float = 3.0
+@export var steer_speed: float = 5.0
 @export var drift_friction: float = 0.6
 @export var normal_friction: float = 0.9
 
@@ -30,8 +30,8 @@ func _physics_process(delta: float) -> void:
 	_update_effects()
 
 func _handle_input(delta: float) -> void:
-	var throttle := Input.get_axis("ui_down", "ui_up")
-	var steer_input := Input.get_axis("ui_right", "ui_left")
+	var throttle := Input.get_axis("ui_up", "ui_down")
+	var steer_input := Input.get_axis("ui_left", "ui_right")
 	handbrake = Input.is_action_pressed("handbrake")
 
 	# Motor

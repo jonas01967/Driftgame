@@ -5,24 +5,32 @@
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=1163791386]
 offset_right = 40.0
 offset_bottom = 40.0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
 
 [node name="VBox" type="VBoxContainer" parent="MarginContainer" unique_id=1157785641]
 layout_mode = 2
+theme_override_constants/separation = 12
 
 [node name="ModeLabel" type="Label" parent="MarginContainer/VBox" unique_id=1001936972]
 layout_mode = 2
+theme_override_font_sizes/font_size = 28
 
 [node name="SpeedLabel" type="Label" parent="MarginContainer/VBox" unique_id=47505730]
 layout_mode = 2
+theme_override_font_sizes/font_size = 28
 
 [node name="ScoreLabel" type="Label" parent="MarginContainer/VBox" unique_id=925835807]
 layout_mode = 2
+theme_override_font_sizes/font_size = 28
 
 [node name="TimeLabel" type="Label" parent="MarginContainer/VBox" unique_id=1340309884]
 layout_mode = 2
+theme_override_font_sizes/font_size = 28
 
 [node name="DriftLabel" type="Label" parent="MarginContainer/VBox" unique_id=1147481305]
 layout_mode = 2
+theme_override_font_sizes/font_size = 28
 
 [node name="DriftBar" type="ProgressBar" parent="." unique_id=407137213]
 anchors_preset = 7
@@ -38,6 +46,7 @@ grow_vertical = 0
 
 [node name="GameOverPanel" type="Panel" parent="." unique_id=1463601550]
 visible = false
+custom_minimum_size = Vector2(400, 250)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -62,16 +71,19 @@ alignment = 1
 
 [node name="FinalLabel" type="Label" parent="GameOverPanel/VBoxContainer" unique_id=623699859]
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "GAME OVER"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="TitleLabel" type="Label" parent="GameOverPanel/VBoxContainer" unique_id=492787586]
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "ENDERGEBNIS"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="RestartButton" type="Button" parent="GameOverPanel/VBoxContainer" unique_id=1553109749]
 layout_mode = 2
+theme_override_font_sizes/font_size = 26
 text = "NEU STARTEN"

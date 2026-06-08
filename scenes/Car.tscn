@@ -1,12 +1,11 @@
 [gd_scene format=3 uid="uid://c3n2o5s06juvn"]
 
 [ext_resource type="Script" uid="uid://cl30crbjifsso" path="res://scripts/car_controller_3d.gd" id="1_7u4s5"]
+[ext_resource type="ArrayMesh" uid="uid://c1ei40iqvmxpv" path="res://Blender/realistic_lowpoly_sedan.obj" id="2_qn377"]
 [ext_resource type="Script" uid="uid://c3w1etecc3jpu" path="res://scripts/camera_rig.gd" id="2_ys5ts"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_y2uan"]
 size = Vector3(2, 1, 4)
-
-[sub_resource type="BoxMesh" id="BoxMesh_gvgjh"]
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_qn377"]
 direction = Vector3(0, 1, 0)
@@ -18,13 +17,15 @@ scale_max = 0.5
 color = Color(0.61960787, 0.61960787, 0.61960787, 0.5882353)
 
 [node name="Car" type="VehicleBody3D" unique_id=159065741 groups=["player"]]
+transform = Transform3D(-0.99999994, 0, 8.742277e-08, 0, 1, 0, -8.742277e-08, 0, -0.99999994, 0, 0, 0)
 script = ExtResource("1_7u4s5")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1736764919]
 shape = SubResource("BoxShape3D_y2uan")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=865250404]
-mesh = SubResource("BoxMesh_gvgjh")
+transform = Transform3D(-4.3711374e-08, 0, -0.9999999, 0, 1, 0, 0.9999999, 0, -4.3711374e-08, 0, 0.5, 0)
+mesh = ExtResource("2_qn377")
 
 [node name="WheelFL" type="VehicleWheel3D" parent="." unique_id=1327330892]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 1.4)
@@ -48,6 +49,7 @@ process_material = SubResource("ParticleProcessMaterial_qn377")
 [node name="WheelRR" type="VehicleWheel3D" parent="." unique_id=745753542]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 0, -1.4)
 use_as_traction = true
+suspension_stiffness = 40.0
 
 [node name="Smoke" type="GPUParticles3D" parent="WheelRR" unique_id=301941290]
 emitting = false

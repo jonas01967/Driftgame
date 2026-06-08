@@ -1,18 +1,14 @@
 extends Node3D
 
-@export var segment_length: float = 20.0
-@export var road_width: float = 12.0
-@export var curve_strength: float = 25.0    # Max. Grad Kurvenneigung
+@export var segment_length: float = 22.0
+@export var road_width: float = 20.0
+@export var curve_strength: float = 12.0
 @export var segments_visible: int = 20
-@export var bank_angle: float = 8.0         # Querneigung in Kurven
 
 var segments: Array[Dictionary] = []
 var last_pos: Vector3 = Vector3.ZERO
-var last_dir: Vector3 = Vector3.FORWARD
+var last_dir: Vector3 = Vector3(0, 0, -1)
 var car_ref: Node3D
-var segment_scene: PackedScene
-
-const ROAD_MATERIAL := preload("res://assets/materials/road.tres")
 
 func _ready() -> void:
 	for i in range(segments_visible + 4):
@@ -33,12 +29,13 @@ func _spawn_segment() -> void:
 
 	var start := last_pos
 	var end_pos := start + new_dir * segment_length
-	var center := (start + end_pos) * 0.5
+	var center := start + new_dir * (segment_length * 0.5)
 
-	# StaticBody3D statt CSGBox3D → hat echte Kollision
 	var body := StaticBody3D.new()
 	body.position = center
-	body.look_at_from_position(center, center + new_dir, Vector3.UP)
+
+	var angle := atan2(new_dir.x, new_dir.z)
+	body.rotation.y = angle
 
 	var col := CollisionShape3D.new()
 	var shape := BoxShape3D.new()
@@ -54,7 +51,7 @@ func _spawn_segment() -> void:
 	mesh.mesh = box
 	mesh.material_override = mat
 	body.add_child(mesh)
-	
+
 	add_child(body)
 
 	segments.append({
@@ -68,7 +65,7 @@ func _spawn_segment() -> void:
 	last_dir = new_dir
 
 func _recycle_behind() -> void:
-	if segments.is_empty():
+	if segments.is_empty() or car_ref == null:
 		return
 	if car_ref.global_position.distance_to(segments[0]["start"]) > segment_length * 6:
 		segments[0]["node"].queue_free()
@@ -79,7 +76,7 @@ func _ensure_ahead() -> void:
 		_spawn_segment()
 
 func get_road_direction_at(pos: Vector3) -> Vector3:
-	var best := Vector3.FORWARD
+	var best := Vector3(0, 0, -1)
 	var best_dist := INF
 	for seg in segments:
 		var d := pos.distance_to(seg["start"])
