@@ -1,7 +1,7 @@
 extends Node3D
 
 @export var segment_length: float = 40.0
-@export var road_width: float = 30.0
+@export var road_width: float = 150.0
 @export var curve_strength: float = 10.0
 @export var segments_visible: int = 20
 
@@ -28,7 +28,7 @@ func _spawn_segment() -> void:
 	var new_dir := last_dir.rotated(Vector3.UP, deg_to_rad(curve)).normalized()
 
 	var start := last_pos
-	var end_pos := start + new_dir * segment_length
+	var end_pos := start + new_dir * (segment_length / 2)
 	var center := start + new_dir * (segment_length * 0.5)
 
 	var body := StaticBody3D.new()

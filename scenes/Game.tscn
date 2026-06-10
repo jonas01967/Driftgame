@@ -19,6 +19,7 @@ environment = SubResource("Environment_aug50")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2072366114]
 transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
 shadow_enabled = true
+directional_shadow_mode = 0
 
 [node name="TrackGenerator" type="Node3D" parent="." unique_id=2102296831]
 script = ExtResource("2_78awf")
