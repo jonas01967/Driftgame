@@ -17,7 +17,7 @@ scale_max = 0.5
 color = Color(0.61960787, 0.61960787, 0.61960787, 0.5882353)
 
 [node name="Car" type="VehicleBody3D" unique_id=159065741 groups=["player"]]
-transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0, 0)
+transform = Transform3D(-0.9999999, 0, 8.742277e-08, 0, 1, 0, -8.742277e-08, 0, -0.9999999, 0, 0, 0)
 script = ExtResource("1_7u4s5")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1736764919]
