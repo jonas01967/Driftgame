@@ -32,7 +32,7 @@ var current_drift_angle: float = 0.0
 func _ready() -> void:
 	base_fov = camera.fov
 	spring_arm.spring_length = zoom
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func setup(car: Node3D) -> void:
 	target = car

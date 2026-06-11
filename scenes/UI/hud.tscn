@@ -33,6 +33,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 28
 
 [node name="DriftBar" type="ProgressBar" parent="." unique_id=407137213]
+visible = false
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0

@@ -18,7 +18,14 @@ color = Color(0.61960787, 0.61960787, 0.61960787, 0.5882353)
 
 [node name="Car" type="VehicleBody3D" unique_id=159065741 groups=["player"]]
 transform = Transform3D(-0.9999999, 0, 8.742277e-08, 0, 1, 0, -8.742277e-08, 0, -0.9999999, 0, 0, 0)
+mass = 1000.0
+center_of_mass_mode = 1
+inertia = Vector3(1000, 1000, 1000)
 script = ExtResource("1_7u4s5")
+engine_force_value = 2000.0
+max_steer = 0.4
+steer_speed = 10.0
+drift_friction = 0.5
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1736764919]
 transform = Transform3D(0.9999923, 0, 2.4158453e-13, 0, 1, 0, -2.4158453e-13, 0, 0.9999923, 0, 0.3, -0.25)
