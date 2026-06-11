@@ -10,7 +10,8 @@ extends Node3D
 const COIN_SCENE := preload("res://scenes/Coin3D.tscn")
 
 func _ready() -> void:
-	var mode = GameManager.current_mode
+	_setup_lighting()
+	var mode := GameManager.current_mode
 	GameManager.start_game(mode)
 	camera_rig.setup(car)
 	car.camera_rig = camera_rig
@@ -18,17 +19,59 @@ func _ready() -> void:
 	hud.setup(car, mode)
 	env_spawner.setup(car, track)
 
-	# Münz-Spawner nur im Score-Modus
 	if mode == GameManager.GameMode.SCORE:
 		_start_coin_spawner()
 
+func _setup_lighting() -> void:
+	# Vorhandene Lichter entfernen
+	for child in get_children():
+		if child is DirectionalLight3D:
+			child.queue_free()
+		if child is WorldEnvironment:
+			child.queue_free()
+
+	# 4 Lichter aus verschiedenen Winkeln
+	var lights := [
+		{"rot": Vector3(-45, 45, 0),   "energy": 1.0,  "shadow": true},
+		{"rot": Vector3(-30, -135, 0), "energy": 0.45, "shadow": false},
+		{"rot": Vector3(-20, 135, 0),  "energy": 0.35, "shadow": false},
+		{"rot": Vector3(-25, -45, 0),  "energy": 0.35, "shadow": false},
+	]
+
+	for l in lights:
+		var light := DirectionalLight3D.new()
+		light.rotation_degrees = l["rot"]
+		light.light_energy = l["energy"]
+		light.shadow_enabled = l["shadow"]
+		light.light_color = Color(1.0, 0.97, 0.92)
+		add_child(light)
+
+	# Himmel und Ambiente
+	var env_node := WorldEnvironment.new()
+	var environment := Environment.new()
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	environment.ambient_light_color = Color(0.6, 0.65, 0.7)
+	environment.ambient_light_energy = 0.6
+	environment.background_mode = Environment.BG_SKY
+
+	var sky := Sky.new()
+	var sky_mat := ProceduralSkyMaterial.new()
+	sky_mat.sky_top_color = Color(0.3, 0.5, 0.8)
+	sky_mat.sky_horizon_color = Color(0.7, 0.8, 0.9)
+	sky_mat.ground_bottom_color = Color(0.2, 0.25, 0.2)
+	sky_mat.ground_horizon_color = Color(0.5, 0.55, 0.45)
+	sky.sky_material = sky_mat
+	environment.sky = sky
+	env_node.environment = environment
+	add_child(env_node)
+
 func _start_coin_spawner() -> void:
-	# Sofort erste Münzen spawnen
+	# Erste Münzen sofort spawnen
 	for i in range(3):
 		await get_tree().create_timer(float(i) * 1.5).timeout
 		_spawn_coin()
 
-	# Danach regelmäßig
+	# Danach regelmäßig alle 4 Sekunden
 	var timer := Timer.new()
 	timer.wait_time = 4.0
 	timer.timeout.connect(_spawn_coin)
@@ -38,11 +81,10 @@ func _start_coin_spawner() -> void:
 func _spawn_coin() -> void:
 	if not GameManager.is_running:
 		return
-	var ahead = track.get_road_direction_at(car.global_position)
-	# Zufällig links/rechts versetzt auf der Straße
+	var road_dir = track.get_road_direction_at(car.global_position)
+	var perp = road_dir.rotated(Vector3.UP, PI * 0.5)
 	var offset := randf_range(-3.0, 3.0)
-	var perp = ahead.rotated(Vector3.UP, PI * 0.5) * offset
-	var spawn_pos = car.global_position + ahead * randf_range(30.0, 50.0) + perp
+	var spawn_pos = car.global_position + road_dir * randf_range(30.0, 50.0) + perp * offset
 	spawn_pos.y = 1.0
 	var coin := COIN_SCENE.instantiate()
 	coin.global_position = spawn_pos

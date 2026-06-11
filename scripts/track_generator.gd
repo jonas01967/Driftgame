@@ -11,7 +11,7 @@ var last_dir: Vector3 = Vector3(0, 0, -1)
 var car_ref: Node3D
 
 func _ready() -> void:
-	for i in range(segments_visible + 4):
+	for i in range(segments_visible + 40):
 		_spawn_segment()
 
 func setup(car: Node3D) -> void:

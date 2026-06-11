@@ -10,6 +10,7 @@ var current_mode: GameMode = GameMode.FREE
 var score: int = 0
 var time_left: float = 120.0
 var is_running: bool = false
+var drift_score_accum: float = 0.0
 
 const TIMER_DURATION: float = 120.0
 const DRIFT_SCORE_RATE: float = 8.0
@@ -17,6 +18,7 @@ const DRIFT_SCORE_RATE: float = 8.0
 func start_game(mode: GameMode) -> void:
 	current_mode = mode
 	score = 0
+	drift_score_accum = 0.0
 	time_left = TIMER_DURATION
 	is_running = true
 	score_changed.emit(score)
@@ -36,9 +38,12 @@ func add_drift_score(drift_angle: float, delta: float) -> void:
 	if not is_running:
 		return
 	# Punkte in ALLEN Modi beim Driften
-	var points := int(drift_angle * DRIFT_SCORE_RATE * delta)
-	score += points
-	score_changed.emit(score)
+	drift_score_accum += drift_angle * DRIFT_SCORE_RATE * delta
+	var points := int(drift_score_accum)
+	if points > 0:
+		drift_score_accum -= points
+		score += points
+		score_changed.emit(score)
 
 func collect_coin(value: int) -> void:
 	if not is_running:
