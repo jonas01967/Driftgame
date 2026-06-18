@@ -10,8 +10,8 @@ signal drift_ended
 @export var steer_speed: float = 4.0
 @export var drift_friction: float = 0.9
 @export var normal_friction: float = 12.0
-@export var max_speed_kmh: float = 160.0
-@export var fall_threshold: float = -10.0
+@export var max_speed_kmh: float = 250.0
+@export var fall_threshold: float = -5.0
 @export var respawn_height: float = 1.5
 
 @onready var wheel_fl: VehicleWheel3D = $WheelFL
@@ -22,6 +22,7 @@ signal drift_ended
 @onready var smoke_rr: GPUParticles3D = $WheelRR/Smoke
 
 var steer_target: float = 0.0
+var steer_input: float = 0.0
 var is_drifting: bool = false
 var drift_angle: float = 0.0
 var handbrake: bool = false
@@ -90,7 +91,7 @@ func _handle_input(delta: float) -> void:
 		return
 
 	var throttle    := Input.get_action_strength("ui_up") - Input.get_action_strength("ui_down")
-	var steer_input := Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
+	steer_input = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
 	handbrake = Input.is_action_pressed("handbrake")
 	reverse_intent = throttle < 0.0
 
@@ -124,9 +125,12 @@ func _handle_input(delta: float) -> void:
 	# ── Handbremse ──
 	if handbrake:
 		var dynamic_brake = brake_value * (0.2 + speed_ratio * 0.8)
-		brake = dynamic_brake * 0.35
+		if throttle > 0.0:
+			engine_force *= 0.35
+			dynamic_brake = brake_value * (0.55 + speed_ratio * 0.45)
+		brake = dynamic_brake
 
-	# Keine Bremse wenn Gas vorwärts
+	# Keine Bremse wenn Gas vorwärts und ohne Handbremse
 	if throttle > 0.0 and not handbrake:
 		brake = 0.0
 
@@ -172,7 +176,7 @@ func _calculate_drift() -> void:
 	drift_angle  = rad_to_deg(acos(clamp(forward.dot(vel_norm), -1.0, 1.0)))
 
 	var was_drifting := is_drifting
-	is_drifting = drift_angle > 12.0 and handbrake and not moving_backward
+	is_drifting = drift_angle > 12.0 and (handbrake or abs(steer_input) > 0.2) and not moving_backward
 
 	if is_drifting:
 		drifting.emit(drift_angle)
@@ -194,7 +198,7 @@ func _update_safe_position(delta: float) -> void:
 	if is_respawning:
 		return
 	safe_position_timer += delta
-	if safe_position_timer >= 1.5:
+	if safe_position_timer >= 2.5:
 		safe_position_timer = 0.0
 		if global_position.y > -1.0 and global_position.y < 3.0:
 			last_safe_position = global_position
@@ -215,7 +219,7 @@ func _respawn() -> void:
 	angular_velocity = Vector3.ZERO
 	engine_force     = 0.0
 	brake            = 500.0
-	await get_tree().create_timer(0.8).timeout
+	await get_tree().create_timer(0.5).timeout
 	global_position  = last_safe_position + Vector3(0, respawn_height, 0)
 	rotation_degrees = Vector3(0, last_safe_rotation.y, 0)
 	linear_velocity  = Vector3.ZERO
