@@ -28,6 +28,7 @@ script = ExtResource("2_78awf")
 
 [node name="Car" parent="." unique_id=159065741 instance=ExtResource("3_s0nni")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 2, -5)
+engine_force_value = 6000.0
 
 [node name="HUD" parent="." unique_id=537271053 instance=ExtResource("4_78awf")]
 script = ExtResource("5_s0nni")

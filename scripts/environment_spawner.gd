@@ -1,7 +1,7 @@
 extends Node3D
 
-@export var spawn_distance_ahead: float = 60.0
-@export var spawn_distance_behind: float = 80.0
+@export var spawn_distance_ahead: float = 200.0
+@export var spawn_distance_behind: float = 160.0
 @export var side_offset_min: float = 8.0
 @export var side_offset_max: float = 22.0
 
