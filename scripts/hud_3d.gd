@@ -8,6 +8,7 @@ extends CanvasLayer
 @onready var game_over_panel: Panel = $GameOverPanel
 @onready var final_label: Label = $GameOverPanel/VBoxContainer/FinalLabel
 @onready var restart_button: Button = $GameOverPanel/VBoxContainer/RestartButton
+@onready var main_menu_button: Button = $GameOverPanel/VBoxContainer/MainMenuButton
 
 var car_ref: Node3D
 var drift_timer: float = 0.0
@@ -20,6 +21,7 @@ func _ready() -> void:
 	game_over_panel.visible = false
 	drift_label.modulate.a = 0.0
 	restart_button.pressed.connect(func(): get_tree().reload_current_scene())
+	main_menu_button.pressed.connect(func(): get_tree().)
 
 func setup(car: Node3D, mode: GameManager.GameMode) -> void:
 	car_ref = car

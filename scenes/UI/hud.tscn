@@ -88,3 +88,8 @@ vertical_alignment = 1
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
 text = "NEU STARTEN"
+
+[node name="MainMenuButton" type="Button" parent="GameOverPanel/VBoxContainer" unique_id=2136941815]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "HAUPTMENÜ"

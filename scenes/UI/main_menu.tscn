@@ -40,3 +40,9 @@ custom_minimum_size = Vector2(1000, 250)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Punkte"
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1708657886]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+stretch_mode = 6
