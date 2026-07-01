@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://crkl182pxubpp"]
 
 [ext_resource type="Script" uid="uid://b8j8us8x7plag" path="res://scripts/main_menu.gd" id="1_qwnig"]
+[ext_resource type="Texture2D" uid="uid://dl86q55rakfbc" path="res://assets/textures/car_background.jpg" id="2_yonvy"]
 
 [node name="MainMenu" type="Control" unique_id=53322709]
 layout_mode = 3
@@ -8,6 +9,7 @@ anchors_preset = 0
 script = ExtResource("1_qwnig")
 
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=2132054111]
+top_level = true
 layout_mode = 0
 offset_left = 490.0
 offset_top = 40.0
@@ -42,7 +44,14 @@ theme_override_font_sizes/font_size = 28
 text = "Punkte"
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1708657886]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1968.0
+offset_bottom = 1126.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_yonvy")
 stretch_mode = 6

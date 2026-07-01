@@ -21,7 +21,7 @@ func _ready() -> void:
 	game_over_panel.visible = false
 	drift_label.modulate.a = 0.0
 	restart_button.pressed.connect(func(): get_tree().reload_current_scene())
-	main_menu_button.pressed.connect(func(): get_tree().)
+	main_menu_button.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/UI/main_menu.tscn"))
 
 func setup(car: Node3D, mode: GameManager.GameMode) -> void:
 	car_ref = car
@@ -75,6 +75,7 @@ func _on_score(value: int) -> void:
 	tween.tween_property(score_label, "scale", Vector2(1.0, 1.0), 0.08)
 
 func _on_time(value: float) -> void:
+	@warning_ignore("integer_division")
 	var minutes := int(value) / 60
 	var seconds := int(value) % 60
 	time_label.text = "⏱ %d:%02d" % [minutes, seconds]
