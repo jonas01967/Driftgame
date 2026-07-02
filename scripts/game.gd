@@ -89,3 +89,8 @@ func _spawn_coin() -> void:
 	var coin := COIN_SCENE.instantiate()
 	coin.global_position = spawn_pos
 	coin_spawner.add_child(coin)
+
+func _inpuwt(event: InputEvent) -> void:
+	if event is InputEventKey and event.is_action_just_pressed("ui_cancel"):
+		GameManager.is_running = false
+		get_tree().change_scene_to_file("res://scenes/UI/main_menu.tscn")

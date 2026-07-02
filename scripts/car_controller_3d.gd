@@ -80,6 +80,11 @@ func _physics_process(delta: float) -> void:
 	_update_sounds(delta)
 	_update_safe_position(delta)
 	_check_respawn()
+	
+func _check_menu() -> void:
+	if Input.is_action_just_pressed("ui_cancel"):
+		GameManager.is_running = false
+		get_tree().change_scene_to_file("res://scenes/UI/main_menu.tscn")
 
 func _detect_direction() -> void:
 	if linear_velocity.length() > 0.5:
