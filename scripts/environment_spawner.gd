@@ -23,7 +23,7 @@ var tree_scenes: Array = []
 
 func _ready() -> void:
 	house_scenes = [HOUSE_MEDIUM, HOUSE_TALL, HOUSE_GARAGE]
-	tree_scenes  = [TREE_1, TREE_2, TREE_3]
+	tree_scenes  = [TREE_1, TREE_2,]
 
 func setup(car: Node3D, track: Node3D) -> void:
 	car_ref        = car
@@ -60,7 +60,7 @@ func _spawn_ahead() -> void:
 			var t_offset := randf_range(side_offset_min, side_offset_max + 6.0)
 			t_pos += perp * side * t_offset
 			t_pos.y = 0.0
-			_spawn_object(tree_scenes[randi() % 3], t_pos, road_dir, false, true)
+			_spawn_object(tree_scenes[randi() % 2], t_pos, road_dir, false, true)
 
 		# Gras — kein Schatten, keine Kollision nötig
 		for i in range(4):

@@ -9,8 +9,7 @@ signal drift_ended
 @export var steer_speed: float = 4.0
 @export var drift_friction: float = 0.9
 @export var normal_friction: float = 12.0
-@export var max_speed_kmh: float = 260.0
-@export var max_reverse_speed_kmh: float = 80.0
+@export var max_speed_kmh: float = 160.0
 @export var fall_threshold: float = -10.0
 @export var respawn_height: float = 1.5
 
@@ -20,10 +19,10 @@ signal drift_ended
 @onready var wheel_rr: VehicleWheel3D = $WheelRR
 @onready var smoke_rl: GPUParticles3D = $WheelRL/Smoke
 @onready var smoke_rr: GPUParticles3D = $WheelRR/Smoke
-@onready var engine_sound: AudioStreamPlayer3D = $EngineSound
-@onready var brake_sound: AudioStreamPlayer3D = $BrakeSound
-@onready var drift_sound: AudioStreamPlayer3D = $DriftSound
-@onready var start_sound: AudioStreamPlayer3D = $StartSound
+@onready var engine_sound: AudioStreamPlayer = $EngineSound
+@onready var brake_sound: AudioStreamPlayer = $BrakeSound
+@onready var drift_sound: AudioStreamPlayer = $DriftSound
+@onready var start_sound: AudioStreamPlayer = $StartSound
 
 var steer_target: float = 0.0
 var is_drifting: bool = false
@@ -53,9 +52,40 @@ func _ready() -> void:
 	_setup_wheels()
 	last_safe_position = global_position
 	last_safe_rotation = rotation_degrees
-	engine_sound.volume_db = -80.0
-	brake_sound.volume_db = -80.0
-	drift_sound.volume_db = -80.0
+	_setup_sounds()
+
+func _setup_sounds() -> void:
+	var engine_stream = load("res://assets/sounds/engine.wav")
+	var brake_stream  = load("res://assets/sounds/brake.wav")
+	var drift_stream  = load("res://assets/sounds/drifting.wav")
+	var start_stream  = load("res://assets/sounds/start.wav")
+
+	print("engine: ", engine_stream)
+	print("brake:  ", brake_stream)
+	print("drift:  ", drift_stream)
+	print("start:  ", start_stream)
+
+	if engine_stream:
+		
+		engine_sound.stream = engine_stream
+		engine_sound.volume_db = -80.0
+		engine_sound.play()
+
+	if brake_stream:
+		
+		brake_sound.stream = brake_stream
+		brake_sound.volume_db = -80.0
+		brake_sound.play()
+
+	if drift_stream:
+		
+		drift_sound.stream = drift_stream
+		drift_sound.volume_db = -80.0
+		drift_sound.play()
+
+	if start_stream:
+		start_sound.stream = start_stream
+		start_sound.volume_db = 0.0
 
 func _setup_wheels() -> void:
 	for wheel in [wheel_fl, wheel_fr, wheel_rl, wheel_rr]:
@@ -82,31 +112,22 @@ func _physics_process(delta: float) -> void:
 	_update_safe_position(delta)
 	_check_respawn()
 
-func _check_menu() -> void:
-	if Input.is_action_just_pressed("ui_cancel"):
-		GameManager.is_running = false
-		get_tree().change_scene_to_file("res://scenes/UI/main_menu.tscn")
-
 func _detect_direction() -> void:
 	if linear_velocity.length() > 0.5:
 		var forward := -global_transform.basis.z
 		var vel_dot := forward.dot(linear_velocity.normalized())
-		moving_backward = vel_dot < -0.1
+		moving_backward = vel_dot < -0.2
 	else:
 		moving_backward = false
 	is_reversing = moving_backward
 
 func _handle_input(delta: float) -> void:
-	
-
-	print("spd:", snappedf(current_speed_kmh, 0.1), " back:", moving_backward, " eng:", engine_force, " brake:", brake)
 	if is_respawning:
 		engine_force = 0.0
 		brake = 500.0
 		return
 
 	var throttle    := Input.get_axis("ui_down", "ui_up")
-	print("throttle:", throttle)
 	var steer_input := Input.get_axis("ui_left", "ui_right")
 	handbrake = Input.is_action_pressed("handbrake")
 	reverse_intent = throttle < 0.0
@@ -122,14 +143,14 @@ func _handle_input(delta: float) -> void:
 			engine_force = engine_force_value * throttle * torque_curve
 
 	elif throttle < 0.0:
-		brake = 0.0
-		if current_speed_kmh < max_reverse_speed_kmh:
-			engine_force = engine_force_value * throttle * 0.85
-		else:
+		if not moving_backward and current_speed_kmh > 2.0:
 			engine_force = 0.0
+			brake = brake_value * (0.3 + speed_ratio * 0.7)
+		else:
+			engine_force = engine_force_value * throttle * 0.55
+			brake = 0.0
 	else:
 		engine_force = 0.0
-		brake = 0.0
 		if current_speed_kmh > 5.0:
 			engine_force = -engine_force_value * 0.05 * speed_ratio
 
@@ -144,7 +165,7 @@ func _handle_input(delta: float) -> void:
 	# ── Lenkung ──
 	var steer_factor   = 1.0 - speed_ratio * 0.55
 	var steer_response = steer_speed * (0.7 + speed_ratio * 0.6)
-	var steer_dir      = -1.0 if moving_backward else 1.0
+	var steer_dir      := -1.0 if moving_backward else 1.0
 	steer_target = steer_input * max_steer * steer_factor * steer_dir
 	steering = lerp(steering, steer_target, steer_response * delta)
 
@@ -202,8 +223,8 @@ func _update_effects() -> void:
 func _update_sounds(delta: float) -> void:
 	if is_respawning:
 		engine_sound.volume_db = lerp(engine_sound.volume_db, -80.0, delta * 5.0)
-		brake_sound.volume_db = -80.0
-		drift_sound.volume_db = -80.0
+		brake_sound.volume_db  = -80.0
+		drift_sound.volume_db  = -80.0
 		return
 
 	var throttle    := Input.get_axis("ui_down", "ui_up")
@@ -237,16 +258,16 @@ func _update_sounds(delta: float) -> void:
 
 	if braking:
 		brake_sound.pitch_scale = 0.7 + speed_ratio * 0.6
-		brake_sound.volume_db = lerp(brake_sound.volume_db, -6.0 + speed_ratio * 4.0, 8.0 * delta)
+		brake_sound.volume_db   = lerp(brake_sound.volume_db, -6.0 + speed_ratio * 4.0, 8.0 * delta)
 	else:
-		brake_sound.volume_db = lerp(brake_sound.volume_db, -80.0, 8.0 * delta)
+		brake_sound.volume_db   = lerp(brake_sound.volume_db, -80.0, 8.0 * delta)
 
 	# ── Drift ──
 	if is_drifting:
 		drift_sound.pitch_scale = 0.8 + (drift_angle / 90.0) * 0.6
-		drift_sound.volume_db = lerp(drift_sound.volume_db, -4.0, 6.0 * delta)
+		drift_sound.volume_db   = lerp(drift_sound.volume_db, -4.0, 6.0 * delta)
 	else:
-		drift_sound.volume_db = lerp(drift_sound.volume_db, -80.0, 6.0 * delta)
+		drift_sound.volume_db   = lerp(drift_sound.volume_db, -80.0, 6.0 * delta)
 
 func _update_safe_position(delta: float) -> void:
 	if is_respawning:
