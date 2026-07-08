@@ -9,7 +9,8 @@ signal drift_ended
 @export var steer_speed: float = 4.0
 @export var drift_friction: float = 0.9
 @export var normal_friction: float = 12.0
-@export var max_speed_kmh: float = 160.0
+@export var max_speed_kmh: float = 260.0
+@export var max_reverse_speed_kmh: float = 80.0
 @export var fall_threshold: float = -10.0
 @export var respawn_height: float = 1.5
 
@@ -60,25 +61,17 @@ func _setup_sounds() -> void:
 	var drift_stream  = load("res://assets/sounds/drifting.wav")
 	var start_stream  = load("res://assets/sounds/start.wav")
 
-	print("engine: ", engine_stream)
-	print("brake:  ", brake_stream)
-	print("drift:  ", drift_stream)
-	print("start:  ", start_stream)
-
 	if engine_stream:
-		
 		engine_sound.stream = engine_stream
 		engine_sound.volume_db = -80.0
 		engine_sound.play()
 
 	if brake_stream:
-		
 		brake_sound.stream = brake_stream
 		brake_sound.volume_db = -80.0
 		brake_sound.play()
 
 	if drift_stream:
-		
 		drift_sound.stream = drift_stream
 		drift_sound.volume_db = -80.0
 		drift_sound.play()
@@ -112,11 +105,16 @@ func _physics_process(delta: float) -> void:
 	_update_safe_position(delta)
 	_check_respawn()
 
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		GameManager.is_running = false
+		get_tree().change_scene_to_file("res://scenes/UI/main_menu.tscn")
+
 func _detect_direction() -> void:
 	if linear_velocity.length() > 0.5:
-		var forward := -global_transform.basis.z
+		var forward := global_transform.basis.z
 		var vel_dot := forward.dot(linear_velocity.normalized())
-		moving_backward = vel_dot < -0.2
+		moving_backward = vel_dot < -0.1
 	else:
 		moving_backward = false
 	is_reversing = moving_backward
@@ -128,7 +126,7 @@ func _handle_input(delta: float) -> void:
 		return
 
 	var throttle    := Input.get_axis("ui_down", "ui_up")
-	var steer_input := Input.get_axis("ui_left", "ui_right")
+	var steer_input := Input.get_axis("ui_right", "ui_left")
 	handbrake = Input.is_action_pressed("handbrake")
 	reverse_intent = throttle < 0.0
 
@@ -143,14 +141,15 @@ func _handle_input(delta: float) -> void:
 			engine_force = engine_force_value * throttle * torque_curve
 
 	elif throttle < 0.0:
-		if not moving_backward and current_speed_kmh > 2.0:
-			engine_force = 0.0
-			brake = brake_value * (0.3 + speed_ratio * 0.7)
+		brake = 0.0
+		if current_speed_kmh < max_reverse_speed_kmh:
+			engine_force = engine_force_value * throttle * 0.85
 		else:
-			engine_force = engine_force_value * throttle * 0.55
-			brake = 0.0
+			engine_force = 0.0
+
 	else:
 		engine_force = 0.0
+		brake = 0.0
 		if current_speed_kmh > 5.0:
 			engine_force = -engine_force_value * 0.05 * speed_ratio
 
@@ -165,7 +164,7 @@ func _handle_input(delta: float) -> void:
 	# ── Lenkung ──
 	var steer_factor   = 1.0 - speed_ratio * 0.55
 	var steer_response = steer_speed * (0.7 + speed_ratio * 0.6)
-	var steer_dir      := -1.0 if moving_backward else 1.0
+	var steer_dir      = -1.0 if moving_backward else 1.0
 	steer_target = steer_input * max_steer * steer_factor * steer_dir
 	steering = lerp(steering, steer_target, steer_response * delta)
 
@@ -197,12 +196,12 @@ func _calculate_drift() -> void:
 			camera_rig.set_drift_angle(0.0)
 		return
 
-	var forward  := -global_transform.basis.z
+	var forward  := global_transform.basis.z
 	var vel_norm := linear_velocity.normalized()
 	drift_angle  = rad_to_deg(acos(clamp(forward.dot(vel_norm), -1.0, 1.0)))
 
 	var was_drifting := is_drifting
-	is_drifting = drift_angle > 12.0 and handbrake and not moving_backward
+	is_drifting = drift_angle > 12.0 and drift_angle < 120.0 and handbrake
 
 	if is_drifting:
 		drifting.emit(drift_angle)
