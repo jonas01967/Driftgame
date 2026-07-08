@@ -10,6 +10,7 @@ signal drift_ended
 @export var drift_friction: float = 0.9
 @export var normal_friction: float = 12.0
 @export var max_speed_kmh: float = 260.0
+@export var max_reverse_speed_kmh: float = 80.0
 @export var fall_threshold: float = -10.0
 @export var respawn_height: float = 1.5
 
@@ -80,7 +81,7 @@ func _physics_process(delta: float) -> void:
 	_update_sounds(delta)
 	_update_safe_position(delta)
 	_check_respawn()
-	
+
 func _check_menu() -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
 		GameManager.is_running = false
@@ -90,18 +91,22 @@ func _detect_direction() -> void:
 	if linear_velocity.length() > 0.5:
 		var forward := -global_transform.basis.z
 		var vel_dot := forward.dot(linear_velocity.normalized())
-		moving_backward = vel_dot < -0.2
+		moving_backward = vel_dot < -0.1
 	else:
 		moving_backward = false
 	is_reversing = moving_backward
 
 func _handle_input(delta: float) -> void:
+	
+
+	print("spd:", snappedf(current_speed_kmh, 0.1), " back:", moving_backward, " eng:", engine_force, " brake:", brake)
 	if is_respawning:
 		engine_force = 0.0
 		brake = 500.0
 		return
 
 	var throttle    := Input.get_axis("ui_down", "ui_up")
+	print("throttle:", throttle)
 	var steer_input := Input.get_axis("ui_left", "ui_right")
 	handbrake = Input.is_action_pressed("handbrake")
 	reverse_intent = throttle < 0.0
@@ -117,14 +122,14 @@ func _handle_input(delta: float) -> void:
 			engine_force = engine_force_value * throttle * torque_curve
 
 	elif throttle < 0.0:
-		if not moving_backward and current_speed_kmh > 2.0:
-			engine_force = 0.0
-			brake = brake_value * (0.3 + speed_ratio * 0.7)
+		brake = 0.0
+		if current_speed_kmh < max_reverse_speed_kmh:
+			engine_force = engine_force_value * throttle * 0.85
 		else:
-			engine_force = engine_force_value * throttle * 0.55
-			brake = 0.0
+			engine_force = 0.0
 	else:
 		engine_force = 0.0
+		brake = 0.0
 		if current_speed_kmh > 5.0:
 			engine_force = -engine_force_value * 0.05 * speed_ratio
 
@@ -211,7 +216,7 @@ func _update_sounds(delta: float) -> void:
 	if current_speed_kmh < 1.0:
 		engine_started = false
 
-	# ── Motor — immer aktiv via Autoplay+Loop ──
+	# ── Motor ──
 	var target_pitch = 0.5 + speed_ratio * 1.5
 	if throttle > 0.0:
 		target_pitch += 0.2
