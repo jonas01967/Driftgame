@@ -84,7 +84,7 @@ func _setup_wheels() -> void:
 	for wheel in [wheel_fl, wheel_fr, wheel_rl, wheel_rr]:
 		wheel.wheel_radius = 0.35
 		wheel.wheel_rest_length = 0.15
-		wheel.suspension_stiffness = 80.0
+		wheel.suspension_stiffness = 40.0
 		wheel.suspension_max_force = 12000.0
 		wheel.damping_compression = 0.5
 		wheel.damping_relaxation = 0.6
@@ -237,42 +237,35 @@ func _update_sounds(delta: float) -> void:
 		engine_started = false
 
 	# ── Motor ──
-	var target_pitch = 0.5 + speed_ratio * 1.5
-	if throttle > 0.0:
-		target_pitch += 0.2
-	elif throttle < 0.0:
-		target_pitch = 0.4 + speed_ratio * 0.4
-	engine_sound.pitch_scale = lerp(engine_sound.pitch_scale, target_pitch, 6.0 * delta)
-
-	var target_vol = -28.0 + speed_ratio * 18.0
+	# ── Motor ──
+	var target_vol = -10.0 + speed_ratio * 10.0    # war -28.0 + 18.0
 	if throttle > 0.0:
 		target_vol += 4.0
 	elif throttle == 0.0:
-		target_vol -= 4.0
+		target_vol -= 2.0
 	engine_sound.volume_db = lerp(engine_sound.volume_db, target_vol, 5.0 * delta)
 
 	# ── Bremsen ──
-	var braking := (handbrake or (throttle < 0.0 and not moving_backward)) \
-				   and current_speed_kmh > 15.0
-
+	
+	var braking := (handbrake or (throttle < 0.0 and not moving_backward)) and current_speed_kmh > 15.0
 	if braking:
 		brake_sound.pitch_scale = 0.7 + speed_ratio * 0.6
-		brake_sound.volume_db   = lerp(brake_sound.volume_db, -6.0 + speed_ratio * 4.0, 8.0 * delta)
+		brake_sound.volume_db   = lerp(brake_sound.volume_db, 0.0 + speed_ratio * 4.0, 8.0 * delta)
 	else:
 		brake_sound.volume_db   = lerp(brake_sound.volume_db, -80.0, 8.0 * delta)
 
 	# ── Drift ──
 	if is_drifting:
 		drift_sound.pitch_scale = 0.8 + (drift_angle / 90.0) * 0.6
-		drift_sound.volume_db   = lerp(drift_sound.volume_db, -4.0, 6.0 * delta)
+		drift_sound.volume_db   = lerp(drift_sound.volume_db, 2.0, 6.0 * delta)
 	else:
 		drift_sound.volume_db   = lerp(drift_sound.volume_db, -80.0, 6.0 * delta)
-
+	
 func _update_safe_position(delta: float) -> void:
 	if is_respawning:
 		return
 	safe_position_timer += delta
-	if safe_position_timer >= 0.5:
+	if safe_position_timer >= 5.0:
 		safe_position_timer = 0.0
 		if global_position.y > -1.0 and global_position.y < 3.0:
 			last_safe_position = global_position
